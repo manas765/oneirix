@@ -2,32 +2,58 @@
 
 ## Engine
 
-- [ ] **Decide: Unity or Unreal** — write the decision here once made, and
-  the version to standardize on. Everyone must use the same version to
-  avoid file/asset conflicts.
+**Decision: Unreal Engine** (locked in)
 
-Engine version: _TBD_
+Engine version: _fill in once installed — pick the latest stable release
+at time of setup, and everyone must use the same version to avoid
+file/asset conflicts._
+
+Install via the [Epic Games Launcher](https://www.unrealengine.com/en-US/download).
+
+**Scripting approach:** Start with Blueprints (visual scripting) for
+gameplay logic — faster to learn, capable enough for this scope. Use C++
+only where needed for performance or for the backend/Event JSON
+integration layer (Person 1 & Person 4). Mixing both is normal and fine.
 
 ## Required per role
 
 | Role | Tools |
 |---|---|
 | P1 — AI & Narrative | Python (or Node) for the AI service, an LLM API key, JSON schema validator of choice |
-| P2 — Gameplay | Unity/Unreal (see above), Git LFS for scene files |
-| P3 — Environment Art | Unity/Unreal (see above), Blender or equivalent for props, Git LFS for meshes/textures/audio |
+| P2 — Gameplay | Unreal Engine (Epic Games Launcher), Git LFS |
+| P3 — Environment Art | Unreal Engine, Blender or equivalent for props, Git LFS |
 | P4 — Backend | Python/FastAPI or Node, a database (start with SQLite/Postgres locally) |
 
 ## Git LFS
 
-3D projects generate large binary files (meshes, textures, audio, scenes).
-Set up [Git LFS](https://git-lfs.com/) **before** anyone commits binary
-assets, or the repo will bloat fast and become painful to clone.
+Unreal projects generate large binary files (`.uasset`, `.umap`, meshes,
+textures, audio). Set up [Git LFS](https://git-lfs.com/) **before**
+anyone commits these, or the repo will bloat fast and become painful to
+clone.
 
 ```
 git lfs install
-git lfs track "*.fbx" "*.png" "*.wav" "*.mp3" "*.uasset" "*.unity" "*.blend"
+git lfs track "*.uasset" "*.umap" "*.fbx" "*.png" "*.wav" "*.mp3"
 git add .gitattributes
+git commit -m "Set up Git LFS for Unreal binary assets"
+git push
 ```
+
+## Backend/AI Integration Note (Unreal-specific)
+
+Unreal's HTTP/JSON handling (via its `HttpModule` and `Json` modules) is
+more verbose than a typical web-dev workflow. Person 1 and Person 4
+should build one clean, reusable pattern early for calling the backend
+and parsing Event JSON (`docs/event-schema.md`) — this gets reused
+constantly, so it's worth getting right up front rather than repeating
+boilerplate per feature.
+
+## Hardware Note
+
+Unreal is heavier to run/compile than some alternatives. Confirm
+everyone's machine can handle it reasonably (a recent GPU helps) before
+getting deep into environment work — flag it now if anyone's on
+lower-spec hardware.
 
 ## Branching
 
