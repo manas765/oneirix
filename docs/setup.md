@@ -4,9 +4,7 @@
 
 **Decision: Unreal Engine** (locked in)
 
-Engine version: _fill in once installed — pick the latest stable release
-at time of setup, and everyone must use the same version to avoid
-file/asset conflicts._
+Engine version: 5.8.2
 
 Install via the [Epic Games Launcher](https://www.unrealengine.com/en-US/download).
 
