@@ -29,6 +29,12 @@ the environment loader (Person 3), the backend (Person 4) — is built on.
 }
 ```
 
+## Status
+
+Prototype tested (Person 1) using Gemini's structured output — the shape
+above is enforceable via JSON schema and produces valid, consistent
+output. Confirms this schema is implementable as written.
+
 ## Why `setting_category` and `scale` matter
 
 The dream can start **anywhere** — not just a hostel. `setting_category`

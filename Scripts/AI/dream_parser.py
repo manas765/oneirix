@@ -1,4 +1,5 @@
 import os
+import json
 from dotenv import load_dotenv
 from google import genai
 
@@ -9,24 +10,43 @@ client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 DREAM_STATE_SCHEMA = {
     "type": "object",
     "properties": {
-        "location": {"type": "string"},
+        "dream_id": {"type": "string"},
+        "player_id": {"type": "string"},
+        "raw_input": {"type": "string"},
         "setting_category": {
             "type": "string",
-            "enum": ["Indoor", "Institutional", "Outdoor", "Urban", "Transit", "Abstract"]
+            "enum": ["indoor", "institutional", "outdoor", "urban", "transit", "abstract"]
         },
+        "location_name": {"type": "string"},
+        "scale": {"type": "string"},
+        "time_of_day": {"type": "string"},
         "characters": {"type": "array", "items": {"type": "string"}},
         "objects": {"type": "array", "items": {"type": "string"}},
-        "atmosphere": {"type": "string"},
-        "last_moment": {"type": "string"}
+        "events": {"type": "array", "items": {"type": "string"}},
+        "atmosphere": {"type": "array", "items": {"type": "string"}},
+        "final_moment": {"type": "string"},
+        "unresolved_elements": {"type": "array", "items": {"type": "string"}},
+        "known_mysteries": {"type": "array", "items": {"type": "string"}}
     },
-    "required": ["location", "setting_category", "characters", "objects", "atmosphere", "last_moment"]
+    "required": [
+        "dream_id", "player_id", "raw_input", "setting_category",
+        "location_name", "scale", "time_of_day", "characters",
+        "objects", "events", "atmosphere", "final_moment",
+        "unresolved_elements", "known_mysteries"
+    ]
 }
 
-def parse_dream(dream_text: str) -> dict:
+def parse_dream(dream_text: str, dream_id: str, player_id: str) -> dict:
     interaction = client.interactions.create(
         model="gemini-3.6-flash",
         input=f"""You are a dream parser. Extract structured information from this dream description.
-Identify the exact last moment the dreamer remembers before waking up.
+Identify the exact final moment the dreamer remembers before waking up.
+Flag any unresolved elements (things mentioned but never explained) and any
+mysteries the dream implies but doesn't resolve.
+
+raw_input to use verbatim: {dream_text}
+dream_id to use: {dream_id}
+player_id to use: {player_id}
 
 Dream: {dream_text}""",
         response_format={
@@ -35,9 +55,9 @@ Dream: {dream_text}""",
             "schema": DREAM_STATE_SCHEMA
         }
     )
-    return interaction.output_text
+    return json.loads(interaction.output_text)
 
 if __name__ == "__main__":
-    test_dream = "I was walking through my old school hallway at night, and the lights kept flickering. I saw a door at the end that I'd never noticed before. I opened it and there was just darkness. Then I woke up."
-    result = parse_dream(test_dream)
-    print(result)
+    test_dream = "I was sleeping in my hostel. Suddenly I heard someone crying outside. I opened the door and the corridor was empty."
+    result = parse_dream(test_dream, dream_id="dream_0001", player_id="player_0001")
+    print(json.dumps(result, indent=2))
