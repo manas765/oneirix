@@ -1,81 +1,79 @@
-# ONEIRIX — AI Continuation of Unfinished Dreams
+# ONEIRIX
 
-> "I dreamt it. I woke up. ONEIRIX tells me what happened next."
+**An AI-powered interactive dream, continued.**
 
-A 3D AI-powered narrative game. The player describes a real unfinished dream;
-ONEIRIX reconstructs the last remembered moment as an explorable 3D
-environment, then an AI Story Engine takes over and continues the story
-based on player actions.
-
-Full concept & feature spec: [`docs/spec.md`](docs/spec.md)
+ONEIRIX is a 3D narrative exploration game built around a simple but unusual
+premise: you tell it about a dream you never got to finish, and it builds
+that dream into a playable, explorable world — continuing the story an AI
+weaves from your description, rather than one written in advance.
 
 ---
 
-## Team & Ownership
+## The Idea
 
-| Person | Area | Owns |
-|---|---|---|
-| **P1** | AI & Narrative Systems | Dream parsing, Dream State JSON, AI Story Director, Event JSON generation, story memory, content moderation |
-| **P2** | 3D Game Engine & Gameplay | Character controller, interaction system, investigation mode, consuming Event JSON into gameplay |
-| **P3** | Environment Art & Atmosphere | Modular environment kit, lighting/post-processing, audio design, Dream Journal art |
-| **P4** | Backend & Persistence | Backend API, database, save/resume, connecting AI output to game client |
+Dreams rarely resolve. You wake up mid-chase, mid-conversation, mid-fall —
+and the ending is just gone. ONEIRIX takes that unfinished fragment and
+turns it into the starting point of a game: the world you describe becomes
+a 3D space you can actually walk through, and an AI narrative system carries
+the story forward from wherever your dream left off.
 
-See [`docs/team-roles.md`](docs/team-roles.md) for the full breakdown.
+Every playthrough starts the same way — in a quiet, ordinary bedroom — and
+ends somewhere the player couldn't have predicted.
 
-## The Shared Contract
+## What You'll Actually Play
 
-Everything P1 (AI) and P2 (game engine) build depends on one shared data
-format — the **Event JSON schema**. Lock this early; don't build gameplay
-or AI logic against a schema that isn't agreed on yet.
+The player wakes up in a bedroom, walks out into a hallway, and reaches a
+junction with three doors. Each door is a different unfinished dream,
+continued in a different genre:
 
-See [`docs/event-schema.md`](docs/event-schema.md) and
-[`docs/dream-state-schema.md`](docs/dream-state-schema.md).
+- **A horror path** — rooted in Indian folklore (Churail, Bhoot, Vetal),
+  told slow and quiet rather than loud, in the tradition of J-horror and
+  K-horror: long stretches of stillness, sound that doesn't match what
+  you can see, and reveals that stay just out of full view.
+- **A crime-investigation path** — a death, a haveli, a trail of clues that
+  don't add up the way the village wants them to.
+- **A zombies path** — not a generic outbreak, but the aftermath of a
+  tantric ritual gone wrong.
 
-## Repo Structure
+All three are grounded in the same creative choice: nothing here is a
+reskin of Western horror or crime tropes. The architecture is haveli and
+chawl-inspired, the folklore is drawn directly from Indian oral tradition,
+and the tone is meant to feel specific to a place, not generic.
 
-```
-oneirix/
-├── docs/                   # Specs, schemas, design docs
-├── Assets/
-│   ├── Environments/       # Modular kit, organized by setting category
-│   │   ├── Indoor/
-│   │   ├── Institutional/
-│   │   ├── Outdoor/
-│   │   ├── Urban/
-│   │   ├── Transit/
-│   │   └── Abstract/       # Liminal / dream-logic spaces
-│   ├── Prefabs/
-│   ├── Materials/
-│   └── Audio/
-├── Scripts/
-│   ├── AI/                 # Dream parsing, Story Director integration
-│   ├── Gameplay/           # Character controller, interaction
-│   ├── Backend/            # API client, save/resume
-│   └── Environment/        # Procedural dressing, template loader
-└── Scenes/
-```
+## Why This, Why Now
 
-## MVP Scope (current target)
+Most narrative games are fixed — the same story, the same branches, every
+time. ONEIRIX is trying something different: let the *starting point* be
+personal (your dream, in your words) while the *craft* around it — the
+environment art, the pacing, the folklore grounding — stays deliberate and
+handmade rather than fully procedural. It's a bet that AI-driven narrative
+works best when it's given something specific to build from, not a blank
+page.
 
-1. Dream text input → parsing → Dream State
-2. One fully polished starter environment (built from the modular kit)
-3. Character movement (walk/run/jump) + camera + basic interaction
-4. AI-generated story continuation, one mystery, one clue, one riddle
-5. Save/resume
+## Team
 
-Full MVP list: see `docs/spec.md` section 14.
+Built by a team of 4. Environment art & atmosphere, gameplay systems,
+AI/narrative backend, and production are split across the team, with the
+whole thing coming together in Unreal Engine 5.
 
-## Getting Started
+## Where This Is Headed
 
-1. Clone the repo
-2. See `docs/setup.md` for engine version and required software per role
-3. Check `docs/event-schema.md` before writing any AI-output or gameplay-input code
-4. Open an issue or claim a task before starting new work, to avoid overlap
+- **Oct 12, 2026** — first working demo: one fully playable path (Horror),
+  with the other two doors visible on the map but not yet open
+- **Oct 28, 2026** — a fuller build for IGDC, with all three paths playable
+  and the AI narrative layer more deeply integrated
 
-## Engine
+This is a scoped, deliberate build-out rather than everything-at-once — the
+first milestone proves the core loop works and feels right before the
+world expands around it.
 
-Unity **or** Unreal Engine (decide and lock in `docs/setup.md` before Person 2/3 start building — this affects everyone's file formats).
+## Tech Stack
 
-## License
+- **Engine:** Unreal Engine 5.8.2
+- **Core loop:** exploration, clue/point discovery, scripted narrative
+  beats, an AI system that extends the story based on player input
 
-TBD.
+---
+
+*ONEIRIX — the dream doesn't end when you wake up. It ends when you find
+out what it was trying to tell you.*
