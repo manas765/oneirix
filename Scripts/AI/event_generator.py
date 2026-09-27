@@ -55,7 +55,11 @@ def generate_event(dream_state: dict, story_history: list, chosen_action: str, e
 
     interaction = client.interactions.create(
         model="gemini-3.6-flash",
-        input=f"""You are the AI Story Director for a dream-continuation game.
+        input=f"""You are the AI Story Director for a dream-continuation game set
+in Indian folklore. Ground descriptions, objects, and atmosphere in Indian
+haveli architecture (courtyards, jharokha balconies, jaali lattice screens,
+carved wooden doors) and Indian folklore entities (e.g. Vetal, Churail,
+Bhoot/Pret) rather than generic Western horror imagery.
 
 Dream State:
 {json.dumps(dream_state, indent=2)}
@@ -104,10 +108,15 @@ if __name__ == "__main__":
 
     event_count = len(story_history) + 1
     chosen_action = None
+    valid_choices = None
 
     if story_history:
-        print("Resuming story. Last choices were:", story_history[-1]["next_possible_events"])
+        valid_choices = story_history[-1]["next_possible_events"]
+        print("Resuming story. Last choices were:", valid_choices)
         chosen_action = input("Pick one (or type 'quit'): ")
+        while chosen_action != "quit" and chosen_action not in valid_choices:
+            print(f"Invalid choice. Pick one of: {valid_choices}")
+            chosen_action = input("Pick one (or type 'quit'): ")
         if chosen_action == "quit":
             exit()
 
@@ -121,7 +130,11 @@ if __name__ == "__main__":
         save_json(story_history, STORY_FILE)
         event_count += 1
 
-        print("\nChoices:", event["next_possible_events"])
+        valid_choices = event["next_possible_events"]
+        print("\nChoices:", valid_choices)
         chosen_action = input("Pick one (or type 'quit'): ")
+        while chosen_action != "quit" and chosen_action not in valid_choices:
+            print(f"Invalid choice. Pick one of: {valid_choices}")
+            chosen_action = input("Pick one (or type 'quit'): ")
         if chosen_action == "quit":
             break

@@ -35,14 +35,41 @@ DREAM_STATE_SCHEMA = {
         "unresolved_elements", "known_mysteries"
     ]
 }
+MODERATION_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "is_safe": {"type": "boolean"},
+        "reason": {"type": "string"}
+    },
+    "required": ["is_safe", "reason"]
+}
 
-def parse_dream(dream_text: str, dream_id: str, player_id: str) -> dict:
+def moderate_input(dream_text: str) -> dict:
     interaction = client.interactions.create(
         model="gemini-3.6-flash",
-        input=f"""You are a dream parser. Extract structured information from this dream description.
-Identify the exact final moment the dreamer remembers before waking up.
-Flag any unresolved elements (things mentioned but never explained) and any
-mysteries the dream implies but doesn't resolve.
+        input=f"""Check if this dream description is safe to process into a
+game. Flag as unsafe (is_safe: false) only if it contains: self-harm or
+suicide content, sexual content, hate speech, or real-world violent threats.
+Ordinary dream content involving fear, death, ghosts, or mild violence
+(as part of typical horror/folklore themes) is SAFE and should pass.
+
+Dream text: {dream_text}""",
+        response_format={
+            "type": "text",
+            "mime_type": "application/json",
+            "schema": MODERATION_SCHEMA
+        }
+    )
+    return json.loads(interaction.output_text)
+
+def parse_dream(dream_text: str, dream_id: str, player_id: str) -> dict:
+    moderation = moderate_input(dream_text)
+    if not moderation["is_safe"]:
+        raise ValueError(f"Dream input rejected by moderation: {moderation['reason']}")
+
+    interaction = client.interactions.create(
+        model="gemini-3.6-flash",
+        input=f"""You are a dream parser for a game set in Indian folklore and haveli-style architecture. Extract structured information from this dream description, using Indian settings, objects, and cultural details where the dream is ambiguous (e.g. prefer "courtyard" over "yard", "jaali lattice" over generic "window screen"). Avoid generic Western horror tropes. Identify the exact final moment the dreamer remembers before waking up. Flag any unresolved elements (things mentioned but never explained) and any mysteries the dream implies but doesn't resolve.
 
 raw_input to use verbatim: {dream_text}
 dream_id to use: {dream_id}
